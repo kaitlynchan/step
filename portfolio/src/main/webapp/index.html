@@ -5,15 +5,64 @@
     <title>Kaitlyn Chan</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Bootstrap CDN-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <div id="content">
-      <h1>Kaitlyn Chan</h1>
-      <p>Yo what's up :^)</p>
-      <img src="/images/1.gif">
-      <!--<p>Click here to get a random message:</p>
-      <button onclick="addRandomGreeting()">Hello</button>
-    <div id="greeting-container"></div>-->
+    <div class="container">
+        <div class="row" id ="header">
+            <div class="col">
+                <h1>Lofi</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>Let your music to chill out.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button onclick="addSong()">Song</button>
+                
+            </div>
+            <div class="col">
+                <button onclick="addFilter()">Filter</button>
+                
+            </div>
+            <div class="col">
+                <button onclick="addMonologue()">Monologue</button>
+            </div>
+            <div class="col">
+                <button onclick="addBeat()">Beat</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div id="song-container"></div>
+                <div id="filter-container"></div>
+                <div id="monologue-container"></div>
+                <div id="beat-container"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <img id="homeimg" src="/images/1.gif">
+            </div>
+            <div class="col">
+                <button onclick="lofiStatus()">Generate Lofi</button>
+                <div id="lofi-container"></div>
+            </div>
+        </div>
+      
     </div>
+    
   </body>
 </html>
