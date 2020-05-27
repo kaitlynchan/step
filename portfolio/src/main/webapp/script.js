@@ -94,5 +94,34 @@ function lofiStatus() {
     console.log(lofi.monologue);
     console.log(lofi.beat);
     const lofiContainer = document.getElementById('lofi-container');
-    lofiContainer.innerHTML =   lofi.song+"<br/>"+lofi.filter+"<br/>"+lofi.monologue+"<br/>"+lofi.beat;
+    var missing = "";
+    if (lofi.song == ""){
+        console.log("missing song");
+        missing += "song";
+    }
+
+    if (lofi.filter == ""){
+        console.log("missing filter");
+        missing += "filter";
+    }
+
+    if (lofi.monologue == ""){
+        console.log("missing monologue");
+        missing += "monologue";
+    }
+
+    if (lofi.beat == ""){
+        console.log("missing beat");
+        missing += "beat";
+    }
+
+    var alertHTML = '<div class="alert alert-info alert-dismissible fade show">'+
+                    '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                    'Missing:' + missing + '</div>';
+    if (missing) {
+        lofiContainer.innerHTML = alertHTML;
+    }
+    else {
+        lofiContainer.innerHTML =   lofi.song+"<br/>"+lofi.filter+"<br/>"+lofi.monologue+"<br/>"+lofi.beat;
+    }
 }

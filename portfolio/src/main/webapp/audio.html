@@ -5,7 +5,7 @@
     <title>Kaitlyn Chan</title>
     <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
     <script src="script.js"></script>
-    <script src="audio.js"></script>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Bootstrap CDN-->
     <!-- Latest compiled and minified CSS -->
@@ -32,46 +32,28 @@
         </div>
         <div class="row">
             <div class="col">
-                <button onclick="addSong()">Song</button>
-                
-            </div>
-            <div class="col">
-                <button onclick="addFilter()">Filter</button>
-                
-            </div>
-            <div class="col">
-                <button onclick="addMonologue()">Monologue</button>
-            </div>
-            <div class="col">
-                <button onclick="addBeat()">Beat</button>
+                <audio src="audio/songA.mp3" type="audio/mpeg"></audio>
+                <button data-playing="false" role="switch" aria-checked="false">
+                    <span>Play/Pause</span>
+                </button>
+                <input type="range" id="volume" min="0" max="2" value="1" step="0.01">
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <div id="song-container"></div>
-                <div id="filter-container"></div>
-                <div id="monologue-container"></div>
-                <div id="beat-container"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <img src="/images/index.gif">
-            </div>
-            <div class="col">
-                <button onclick="lofiStatus()">Generate Lofi</button>
-                <div id="lofi-container"></div>
-            </div>
-        </div>
+
+        <div class="row"> 
+            <div class="col"> 
+                <canvas class="visualizer" width="800" height="100"></canvas> 
+            </div> 
+        </div> 
+        
         <div class="row">
             <div class="col">
             <footer class="footer">
                     <span class="text-muted"><a href="about.html">About Me</a></span>
-                    <span class="text-muted"><a href="audio.html">Test Page</a></span>
             </footer>
             </div>
         </div>
     </div>
-    
+    <script src="audio.js"></script>
   </body>
 </html>
