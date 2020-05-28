@@ -24,19 +24,28 @@ const audioElement = document.querySelector('#song');
 const track = audioContext.createMediaElementSource(audioElement);
 
 // load sound
-const audioElement2 = document.querySelector('#static');
+const audioElement2 = document.querySelector('#rain');
 //pass to audioContext(source node)
 const track2 = audioContext.createMediaElementSource(audioElement2);
 
 
 //create analyzer node
 var analyser = audioContext.createAnalyser();
+
+//create no-mod analyzer node
+var analyserNoMod = audioContext.createAnalyser();
+
 //control volume with gain node
 const gainNode = audioContext.createGain();
 
-//set the path 
-track.connect(gainNode).connect(analyser).connect(audioContext.destination);
+//create filter node
+var biquadFilter = audioContext.createBiquadFilter();
 
+//set the path 
+track.connect(analyserNoMod);
+track.connect(gainNode).connect(analyser).connect(audioContext.destination);
+track2.connect(gainNode).connect(analyser).connect(audioContext.destination);
+biquadFilter.connect(gainNode).connect(analyser).connect(audioContext.destination);
 
 const playButton = document.querySelector('button');
 
@@ -73,71 +82,89 @@ volumeControl.addEventListener('input', function() {
     gainNode.gain.value = this.value;
 }, false)
 
-//add a  beat
-let pulseTime = 1;
+
+//Add a background track 
 function addBeat() {
-    //create oscillator
-    let osc = audioContext.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.value = 880;
-    let amp = audioContext.createGain();
-    amp.gain.setValueAtTime(0.5, audioContext.currentTime);
-    //lfo
-    let lfo = audioContext.createOscillator();
-    lfo.type = 'square';
-    lfo.frequency.value = 30;
-    //set path
-    lfo.connect(amp.gain);
-    osc.connect(amp).connect(audioContext.destination);
-    lfo.start();
-    osc.start();
-    osc.stop(audioContext.currentTime + pulseTime);
-}
-
-
-
-function playSample() {
-    track2.connect(gainNode).connect(analyser).connect(audioContext.destination);
     audioElement2.play();
 }
 
 
-//visualize waveform
+
 //determine data length 
 analyser.fftSize = 256; 
+analyserNoMod.fftSize = 256; 
+
 var bufferLength = analyser.frequencyBinCount; 
-console.log(bufferLength);
 var dataArray = new Uint8Array(bufferLength); 
-var canvas = document.querySelector('.visualizer'); 
+var dataArrayNoMod = new Uint8Array(bufferLength); 
+
+var canvas = document.querySelector('#visualizer'); 
+//no mod visualizer
+var canvasNoMod = document.querySelector('#visualizerNoMod'); 
+
 var canvasCtx = canvas.getContext("2d"); 
+var canvasCtxNoMod = canvasNoMod.getContext("2d"); 
+
 const WIDTH = 800; 
 const HEIGHT = 100; 
 canvas.setAttribute('width',WIDTH); 
 canvas.setAttribute('height',HEIGHT); 
 canvasCtx.clearRect(0, 0, WIDTH, HEIGHT); 
 
+canvasNoMod.setAttribute('width',WIDTH); 
+canvasNoMod.setAttribute('height',HEIGHT); 
+canvasCtxNoMod.clearRect(0, 0, WIDTH, HEIGHT); 
 
+//visualize waveform
 function draw() { 
     //console.log("draw func called");
     drawVisual = requestAnimationFrame(draw); 
     analyser.getByteFrequencyData(dataArray); 
+    analyserNoMod.getByteFrequencyData(dataArrayNoMod); 
+
     canvasCtx.fillStyle = 'rgb(0, 0, 0)'; 
-    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT); 
+    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    canvasCtxNoMod.fillStyle = 'rgb(0, 0, 0)'; 
+    canvasCtxNoMod.fillRect(0, 0, WIDTH, HEIGHT);
+
     var barWidth = (WIDTH / bufferLength) * 2.5; 
     var barHeight; 
+    var barHeightNoMod; 
     var x = 0; 
     for(var i = 0; i < bufferLength; i++) { 
         barHeight = dataArray[i]/2; 
+        barHeightNoMod = dataArrayNoMod[i]/2; 
         // if (barHeight > 0) {
         //     console.log(barHeight);
         // }
         canvasCtx.fillStyle = 'rgb(198,70,' + (barHeight+100) + ')'; 
         canvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight/2); 
+
+        canvasCtxNoMod.fillStyle = 'rgb(80,220,' + (barHeightNoMod+100) + ')'; 
+        canvasCtxNoMod.fillRect(x,HEIGHT-barHeightNoMod/2,barWidth,barHeightNoMod/2); 
         x += barWidth + 1; 
     } 
 }; 
 
 draw(); 
+
+//add a  filter
+let pulseTime = 1;
+function addFilter() {
+    track.disconnect(0);
+    track.connect(analyserNoMod);
+    track.connect(biquadFilter);
+    //bass boost
+    biquadFilter.type = "lowshelf";
+    biquadFilter.frequency.setTargetAtTime(1000, audioContext.currentTime, 0);
+    biquadFilter.gain.setTargetAtTime(20, audioContext.currentTime, 0);
+    //lowpass
+    //biquadFilter.type = "lowpass";
+    //biquadFilter.frequency.setTargetAtTime(10000, audioContext.currentTime, 0);
+}
+
+
 
 
 
