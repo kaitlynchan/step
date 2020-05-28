@@ -19,9 +19,16 @@ const audioContext = new AudioContext();
 
 
 // load sound
-const audioElement = document.querySelector('audio');
+const audioElement = document.querySelector('#song');
 //pass to audioContext(source node)
 const track = audioContext.createMediaElementSource(audioElement);
+
+// load sound
+const audioElement2 = document.querySelector('#static');
+//pass to audioContext(source node)
+const track2 = audioContext.createMediaElementSource(audioElement2);
+
+
 //create analyzer node
 var analyser = audioContext.createAnalyser();
 //control volume with gain node
@@ -43,9 +50,11 @@ playButton.addEventListener('click', function() {
     // play or pause track depending on state
     if (this.dataset.playing === 'false') {
         audioElement.play();
+        audioContext.resume();
         this.dataset.playing = 'true';
     } else if (this.dataset.playing === 'true') {
         audioElement.pause();
+        audioContext.suspend();
         this.dataset.playing = 'false';
     }
 
@@ -57,15 +66,43 @@ audioElement.addEventListener('ended', () => {
 
 
 
-//grab input
+//grab input + control volume
 const volumeControl = document.querySelector('#volume');
 
 volumeControl.addEventListener('input', function() {
     gainNode.gain.value = this.value;
 }, false)
 
-//visualize waveform
+//add a  beat
+let pulseTime = 1;
+function addBeat() {
+    //create oscillator
+    let osc = audioContext.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    let amp = audioContext.createGain();
+    amp.gain.setValueAtTime(0.5, audioContext.currentTime);
+    //lfo
+    let lfo = audioContext.createOscillator();
+    lfo.type = 'square';
+    lfo.frequency.value = 30;
+    //set path
+    lfo.connect(amp.gain);
+    osc.connect(amp).connect(audioContext.destination);
+    lfo.start();
+    osc.start();
+    osc.stop(audioContext.currentTime + pulseTime);
+}
 
+
+
+function playSample() {
+    track2.connect(gainNode).connect(analyser).connect(audioContext.destination);
+    audioElement2.play();
+}
+
+
+//visualize waveform
 //determine data length 
 analyser.fftSize = 256; 
 var bufferLength = analyser.frequencyBinCount; 
@@ -91,9 +128,9 @@ function draw() {
     var x = 0; 
     for(var i = 0; i < bufferLength; i++) { 
         barHeight = dataArray[i]/2; 
-        if (barHeight > 0) {
-            console.log(barHeight);
-        }
+        // if (barHeight > 0) {
+        //     console.log(barHeight);
+        // }
         canvasCtx.fillStyle = 'rgb(198,70,' + (barHeight+100) + ')'; 
         canvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight/2); 
         x += barWidth + 1; 
@@ -101,7 +138,6 @@ function draw() {
 }; 
 
 draw(); 
-
 
 
 
