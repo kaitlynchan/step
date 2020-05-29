@@ -68,7 +68,7 @@ function selectFilter() {
     // Add it to the page.
     const filterContainer = document.getElementById('filter-container');
     filterContainer.innerText = filter;
-    updateFilter();
+    updateFilter(lofi);
 }
 
 function selectMonologue() {

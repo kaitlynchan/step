@@ -6,6 +6,15 @@ body {
     padding-right: 10px;
 }
 
+a {
+    color: #917bab;
+}
+
+a:hover {
+    color: #d0b0f7;
+    text-decoration: none;
+}
+
 #header {
     margin-top: 60px;
 }

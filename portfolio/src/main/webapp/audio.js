@@ -26,6 +26,7 @@ var track3;
 var analyser;
 var analyserNoMod;
 var gainNode;
+var biquadFilter
 
 //grab input + control volume
 const volumeControl = document.querySelector('#volume');
@@ -83,6 +84,11 @@ playButton.addEventListener('click', function() {
         } else {
             removeMonologue();
         }
+        if (document.getElementById('chkfilter').checked) {
+            addFilter();
+        } else {
+            removeFilter();
+        }
         
     } else if (play) {
         play = false;
@@ -118,7 +124,7 @@ function initNodes() {
     }, false)
 
     //create filter node
-    var biquadFilter = audioContext.createBiquadFilter();
+    biquadFilter = audioContext.createBiquadFilter();
 }
 
 function visualize() {
@@ -182,6 +188,12 @@ function connectTracks(updateType) {
         track3 = audioContext.createMediaElementSource(audioElement3);
         track3.connect(gainNode).connect(analyser).connect(audioContext.destination);
     }
+
+    if (updateType === "filter"){
+        console.log("connecting filter");
+        biquadFilter.connect(gainNode).connect(analyser).connect(audioContext.destination);
+    }
+
 }
 
 function updateBeat(lofi) {
@@ -202,59 +214,72 @@ function test() {
 
 function updateMonologue() {
     // load sound
-    console.log("updateMonologue called")
+    console.log("updateMonologue called");
     audioElement3 = document.querySelector('#selectedMonologue');
     connectTracks("monologue");
 }
 
-function updateFilter() {
-    biquadFilter.connect(gainNode).connect(analyser).connect(audioContext.destination);
-}
-
-//Add a background track 
-function addBeat() {
-    audioElement2.play();
-}
-
-//Remove background track 
-function removeBeat() {
-    audioElement2.pause();
-}
-
-//add a  filter
-function addFilter() {
-    track.disconnect(0);
-    //reconnect to the analyserNoMod node
-    track.connect(analyserNoMod);
-    track.connect(biquadFilter);
+function updateFilter(lofi) {
+    console.log("Updatefilter called");
+    console.log(lofi.filter);
+    connectTracks("filter");
     //bass boost
-    biquadFilter.type = "lowshelf";
+    biquadFilter.type = lofi.filter;
     biquadFilter.frequency.setTargetAtTime(1000, audioContext.currentTime, 0);
-    biquadFilter.gain.setTargetAtTime(15, audioContext.currentTime, 0);
+    biquadFilter.gain.setTargetAtTime(10, audioContext.currentTime, 0);
     //lowpass (no gain attribute)
     //biquadFilter.type = "lowpass";
     //biquadFilter.frequency.setTargetAtTime(10000, audioContext.currentTime, 0);
 }
 
+//Add a background track 
+function addBeat() {
+    if (track2) {
+        audioElement2.play();
+    }
+}
+
+//Remove background track 
+function removeBeat() {
+    if (track2) {
+        audioElement2.pause();
+    }
+}
+
+//add a  filter
+function addFilter() {
+    if (biquadFilter.type) {
+        track.disconnect(0);
+        //reconnect to the analyserNoMod node
+        track.connect(analyserNoMod);
+        track.connect(biquadFilter);
+    }
+}
+
 //remove the filter
 function removeFilter() {
-    track.disconnect(0);
-    //reconnect to the analyserNoMod node
-    track.connect(analyserNoMod);
-    //bypass the filter node
-    track.connect(gainNode);
+    if (biquadFilter.type) {
+        track.disconnect(0);
+        //reconnect to the analyserNoMod node
+        track.connect(analyserNoMod);
+        //bypass the filter node
+        track.connect(gainNode);
+    }
 }
 
 //add a monologue
 function addMonologue() {
-   audioElement3.play(); 
+    if (track3) {
+        audioElement3.play(); 
+    }
 }
 
 //remove a monologue
 function removeMonologue() {
-   audioElement3.pause(); 
+    if (track3) {
+        audioElement3.pause();
+    }   
 }
-
 
 //visualize waveform
 function draw() { 
@@ -290,7 +315,6 @@ function draw() {
 }; 
 
 document.addEventListener('readystatechange', event => {
-
     // When window loaded ( external resources are loaded too- `css`,`src`, etc...) 
     if (event.target.readyState === "complete") {
         initializeLofi();
