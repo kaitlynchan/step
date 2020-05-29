@@ -16,14 +16,14 @@
  * Adds a random greeting to the page.
  */
 
+//lofi object
 const lofi = {song:"", filter:"", beat:"", monologue:""};
 
-function addSong() {
+function selectSong() {
 
     //upload mp3 file, play to ensure it is correct
 
     //for now, keep local mp3 files
-
     const songs =
         ['songA.mp3', 'songB.mp3'];
 
@@ -32,36 +32,34 @@ function addSong() {
 
     // Update object
     lofi.song = song;
-
-    var mp3viewer = '<audio controls>'+
-                    '<source src="audio/'+song+'" type="audio/mpeg">' + 
-                    '</audio>'
+    var mp3viewer = '<audio id = "selectedSong" src="audio/'+song+'" type="audio/mpeg"></audio>'
     
     // Add it to the page.
     const songContainer = document.getElementById('song-container');
     songContainer.innerHTML = song + '<br/>' + mp3viewer;
+    updateSong(song);
 }
 
-function addBeat() {
+function selectBeat() {
 
     //display beat options + preview play
-    const beats =
-        ['Beat A', 'Beat B', 'Beat C', 'Beat D'];
+    var beats = ['audio/rain.mp3', 'Beat B', 'Beat C', 'Beat D'];
 
     // Pick a random greeting.
-    const beat = beats[Math.floor(Math.random() * beats.length)];
+    var beat = beats[Math.floor(Math.random() * beats.length)];
     // Update object
     lofi.beat = beat;
     // Add it to the page.
-    const beatContainer = document.getElementById('beat-container');
+    var beatContainer = document.getElementById('beat-container');
     beatContainer.innerText = beat;
+    updateBeat(beat);
 }
 
-function addFilter() {
+function selectFilter() {
 
     //display filter selections
     const filters =
-        ['Filter A', 'Filter B', 'Filter C', 'Filter D'];
+        ['lowshelf', 'Filter B', 'Filter C', 'Filter D'];
 
     // Pick a random greeting.
     const filter = filters[Math.floor(Math.random() * filters.length)];
@@ -70,13 +68,13 @@ function addFilter() {
     // Add it to the page.
     const filterContainer = document.getElementById('filter-container');
     filterContainer.innerText = filter;
+    updateFilter();
 }
 
-function addMonologue() {
-
+function selectMonologue() {
     //allow text input + test to speech
     const monologues =
-        ['Monologue A', 'Monologue B', 'Monologue C', 'Monologue D'];
+        ['audio/maman.mp3', 'Monologue B', 'Monologue C', 'Monologue D'];
 
     // Pick a random greeting.
     const monologue = monologues[Math.floor(Math.random() * monologues.length)];
@@ -85,9 +83,13 @@ function addMonologue() {
     // Add it to the page.
     const monologueContainer = document.getElementById('monologue-container');
     monologueContainer.innerText = monologue;
+    updateMonologue(monologue);
 }
 
 function lofiStatus() {
+
+    initializeLofi();
+
     console.log("Lofi Status:")
     console.log(lofi.song);
     console.log(lofi.filter);
@@ -124,4 +126,5 @@ function lofiStatus() {
     else {
         lofiContainer.innerHTML =   lofi.song+"<br/>"+lofi.filter+"<br/>"+lofi.monologue+"<br/>"+lofi.beat;
     }
+
 }
