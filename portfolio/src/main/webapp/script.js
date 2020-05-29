@@ -22,7 +22,6 @@ const lofi = {song:"", filter:"", beat:"", monologue:""};
 function selectSong() {
 
     //upload mp3 file, play to ensure it is correct
-
     //for now, keep local mp3 files
     const songs =
         ['songA.mp3', 'songB.mp3'];
@@ -32,27 +31,28 @@ function selectSong() {
 
     // Update object
     lofi.song = song;
-    var mp3viewer = '<audio id = "selectedSong" src="audio/'+song+'" type="audio/mpeg"></audio>'
+    var songHTML = '<audio id = "selectedSong" src="audio/'+song+'" type="audio/mpeg"></audio>'
     
     // Add it to the page.
     const songContainer = document.getElementById('song-container');
-    songContainer.innerHTML = song + '<br/>' + mp3viewer;
-    updateSong(song);
+    songContainer.innerHTML = song + '<br/>' + songHTML;
+    updateSong(lofi);
 }
 
 function selectBeat() {
 
     //display beat options + preview play
-    var beats = ['audio/rain.mp3', 'Beat B', 'Beat C', 'Beat D'];
+    var beats = ['rain.mp3', 'Beat B', 'Beat C', 'Beat D'];
 
     // Pick a random greeting.
     var beat = beats[Math.floor(Math.random() * beats.length)];
     // Update object
     lofi.beat = beat;
+    var beatHTML = '<audio id = "selectedBeat" src="audio/'+beat+'" type="audio/mpeg"></audio>'
     // Add it to the page.
     var beatContainer = document.getElementById('beat-container');
-    beatContainer.innerText = beat;
-    updateBeat(beat);
+    beatContainer.innerHTML = beat + '<br/>' + beatHTML;
+    updateBeat(lofi);
 }
 
 function selectFilter() {
@@ -74,28 +74,30 @@ function selectFilter() {
 function selectMonologue() {
     //allow text input + test to speech
     const monologues =
-        ['audio/maman.mp3', 'Monologue B', 'Monologue C', 'Monologue D'];
+        ['maman.mp3', 'Monologue B', 'Monologue C', 'Monologue D'];
 
     // Pick a random greeting.
     const monologue = monologues[Math.floor(Math.random() * monologues.length)];
     // Update object
     lofi.monologue = monologue;
+
+    var monologueHTML = '<audio id = "selectedMonologue" src="audio/'+monologue+'" type="audio/mpeg"></audio>'
     // Add it to the page.
-    const monologueContainer = document.getElementById('monologue-container');
-    monologueContainer.innerText = monologue;
-    updateMonologue(monologue);
+    var monologueContainer = document.getElementById('monologue-container');
+    monologueContainer.innerHTML = monologue + '<br/>' + monologueHTML;
+    updateMonologue();
 }
 
 function lofiStatus() {
-
-    initializeLofi();
 
     console.log("Lofi Status:")
     console.log(lofi.song);
     console.log(lofi.filter);
     console.log(lofi.monologue);
     console.log(lofi.beat);
+
     const lofiContainer = document.getElementById('lofi-container');
+
     var missing = "";
     if (lofi.song == ""){
         console.log("missing song");

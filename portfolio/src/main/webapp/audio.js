@@ -31,34 +31,6 @@ var gainNode;
 const volumeControl = document.querySelector('#volume');
 //grab play button
 const playButton = document.querySelector('#genLofi');
-var play;
-playButton.addEventListener('click', function() {
-
-    console.log("play button clicked")
-    
-    // check if context is in suspended state (autoplay policy)
-    if (audioContext.state === 'suspended') {
-        audioContext.resume();
-    }
-
-    // play or pause track depending on state
-    //if (this.dataset.playing === 'false') {
-    if (!play) {
-        console.log("entered play loop");
-        audioElement.play();
-        audioContext.resume();
-        this.dataset.playing = 'true';
-        play = true;
-    } else if (play) {
-        audioElement.pause();
-        audioContext.suspend();
-        this.dataset.playing = 'false';
-        play = false;
-    }
-
-    connectTracks();
-
-}, false);
 
 //set up visualizers
 var canvas = document.querySelector('#visualizer'); 
@@ -78,6 +50,47 @@ canvasNoMod.setAttribute('width',WIDTH);
 canvasNoMod.setAttribute('height',HEIGHT); 
 canvasCtxNoMod.clearRect(0, 0, WIDTH, HEIGHT); 
 
+//visualization variables
+var dataArray;
+var bufferLength;
+var dataArrayNoMod;
+
+//set up play button
+var play;
+playButton.addEventListener('click', function() {
+
+    console.log("play button clicked")
+    
+    // check if context is in suspended state (autoplay policy)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+
+    // play or pause track depending on state
+    if (!play) {
+        console.log("entered play loop");
+        audioElement.play();
+        audioContext.resume();
+        //turn off or on effects (not super elegant logic)
+        if (document.getElementById('chkbeat').checked) {
+            addBeat();
+        } else {
+            removeBeat();
+        }
+        if (document.getElementById('chkmonologue').checked) {
+            addMonologue();
+        } else {
+            removeMonologue();
+        }
+        play = true;
+    } else if (play) {
+        console.log("exited play loop");
+        audioElement.pause();
+        audioContext.suspend();
+        play = false;
+    }
+}, false);
+
 function initializeLofi() {
     //initializes audio context + API usage
     console.log("initLofi clicked");
@@ -85,48 +98,6 @@ function initializeLofi() {
     audioContext = new AudioContext();
     initNodes();
     visualize();
-}
-
-function updateSong(song) {
-    console.log("updateSong called");
-    // load sound
-    audioElement = document.querySelector('#selectedSong');
-    console.log("audio element made");
-    
-    audioElement.addEventListener('ended', () => {
-        playButton.dataset.playing = 'false';
-    }, false);
-}
-
-function connectTracks() {
-    console.log("connectTracks called");
-    if (track){
-        track.disconnect(0);
-    }
-    track = audioContext.createMediaElementSource(audioElement);
-    //set the path 
-    track.connect(analyserNoMod);
-    track.connect(gainNode).connect(analyser).connect(audioContext.destination);
-}
-
-function updateBeat(beat) {
-    // load sound
-    audioElement2 = document.querySelector('#selectedBeat');
-    //pass to audioContext(source node)
-    track2 = audioContext.createMediaElementSource(audioElement2);
-    track2.connect(gainNode).connect(analyser).connect(audioContext.destination);
-}
-
-function updateMonologue(monologue) {
-    // load sound
-    audioElement3 = document.querySelector('#monologue');
-    //pass to audioContext(source node)
-    track3 = audioContext.createMediaElementSource(audioElement3);
-    track3.connect(gainNode).connect(analyser).connect(audioContext.destination);
-}
-
-function updateFilter() {
-    biquadFilter.connect(gainNode).connect(analyser).connect(audioContext.destination);
 }
 
 function initNodes() {
@@ -149,6 +120,95 @@ function initNodes() {
     var biquadFilter = audioContext.createBiquadFilter();
 }
 
+function visualize() {
+    console.log("visualize called");
+    //determine data length 
+    analyser.fftSize = 256; 
+    analyserNoMod.fftSize = 256; 
+
+    bufferLength = analyser.frequencyBinCount; 
+    //dataArrays to store buffer data
+    dataArray = new Uint8Array(bufferLength); 
+    dataArrayNoMod = new Uint8Array(bufferLength); 
+}
+
+function updateSong(lofi) {
+    console.log("updateSong called");
+    // load new song
+    audioElement = document.querySelector('#selectedSong');
+    console.log("new audio element made");
+    
+    audioElement.addEventListener('ended', () => {
+        //playButton.dataset.playing = 'false';
+        play = false;
+    }, false);
+
+    connectTracks("song");
+}
+
+function connectTracks(updateType) {
+    
+    console.log(updateType);
+    //if track already exists, disconnect it first
+
+    if (updateType === "song"){
+        if (track){
+            console.log("track disconnected");
+            track.disconnect(0);
+        }   
+        console.log("connecting song");
+        track = audioContext.createMediaElementSource(audioElement);
+        track.connect(analyserNoMod);
+        track.connect(gainNode).connect(analyser).connect(audioContext.destination);
+    }
+
+    if (updateType === "beat"){
+        console.log("connecting beat ");
+        if (track2){
+            console.log("track2 disconnected");
+            track2.disconnect(0);
+        }
+        track2 = audioContext.createMediaElementSource(audioElement2);
+        track2.connect(gainNode).connect(analyser).connect(audioContext.destination);
+    }
+
+    if (updateType === "monologue"){
+        console.log("connecting monologue");
+        if (track3){
+            console.log("track3 disconnected");
+            track3.disconnect(0);
+        }
+        track3 = audioContext.createMediaElementSource(audioElement3);
+        track3.connect(gainNode).connect(analyser).connect(audioContext.destination);
+    }
+}
+
+function updateBeat(lofi) {
+    // load sound
+    console.log("updateBeat called")
+    audioElement2 = document.querySelector('#selectedBeat');
+    connectTracks("beat");
+}
+
+function test() {
+    if (document.getElementById('chk1').checked) {
+        console.log("checked");
+    } 
+    else {
+        console.log("not checked");
+    }
+}
+
+function updateMonologue() {
+    // load sound
+    console.log("updateMonologue called")
+    audioElement3 = document.querySelector('#selectedMonologue');
+    connectTracks("monologue");
+}
+
+function updateFilter() {
+    biquadFilter.connect(gainNode).connect(analyser).connect(audioContext.destination);
+}
 
 //Add a background track 
 function addBeat() {
@@ -194,25 +254,9 @@ function removeMonologue() {
    audioElement3.pause(); 
 }
 
-var dataArray;
-var bufferLength;
-var dataArrayNoMod;
-function visualize() {
-    console.log("visualize called");
-    //determine data length 
-    analyser.fftSize = 256; 
-    analyserNoMod.fftSize = 256; 
-
-    bufferLength = analyser.frequencyBinCount; 
-    //dataArrays to store buffer data
-    dataArray = new Uint8Array(bufferLength); 
-    dataArrayNoMod = new Uint8Array(bufferLength); 
-}
-
 
 //visualize waveform
 function draw() { 
-    console.log("draw func called");
     drawVisual = requestAnimationFrame(draw); 
     analyser.getByteFrequencyData(dataArray); 
     analyserNoMod.getByteFrequencyData(dataArrayNoMod); 
@@ -244,4 +288,13 @@ function draw() {
     } 
 }; 
 
-draw(); 
+document.addEventListener('readystatechange', event => {
+
+    // When window loaded ( external resources are loaded too- `css`,`src`, etc...) 
+    if (event.target.readyState === "complete") {
+        initializeLofi();
+        //call draw function every 1ms after initLofi has been called (so everything is initialized)
+        setInterval(draw,1);
+    }
+});
+ 

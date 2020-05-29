@@ -31,33 +31,42 @@
         </div>
         <div class="row">
             <div class="col">
-                <button onclick="selectSong()">Song</button>
+                <button type="button" class="btn btn-dark" onclick="selectSong()">Song</button>
                 
             </div>
             <div class="col">
-                <button onclick="selectFilter()">Filter</button>
+                <button type="button" class="btn btn-dark" onclick="selectFilter()">Filter</button>
                 
             </div>
             <div class="col">
-                <button onclick="selectMonologue()">Monologue</button>
+                <button type="button" class="btn btn-dark" onclick="selectMonologue()">Monologue</button>
             </div>
             <div class="col">
-                <button onclick="selectBeat()">Beat</button>
+                <button type="button" class="btn btn-dark" onclick="selectBeat()">Beat</button>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <div id="song-container"></div>
+            </div>
+            <div class="col">
                 <div id="filter-container"></div>
+                <input id="chkfilter" type="checkbox" data-toggle="toggle" onclick="test()"> 
+            </div>
+            <div class="col">
                 <div id="monologue-container"></div>
+                <input id="chkmonologue" type="checkbox" data-toggle="toggle" onclick="test()"> 
+            </div>
+            <div class="col">
                 <div id="beat-container"></div>
+                <input id="chkbeat" type="checkbox" data-toggle="toggle" onclick="test()"> 
             </div>
         </div>
         <div class="row">
-            <div class="col">
-                <img src="/images/index.gif">
+            <div class="col-4">
+                <img id = "totoro" src="/images/index.gif">
             </div>
-            <div class="col">
+            <div class="col-8">
 
                 <button id = "genLofi" onclick="lofiStatus()">Generate Lofi</button>
                 <div id="lofi-container"></div>
@@ -65,8 +74,10 @@
                 <input type="range" id="volume" min="0" max="2" value="1" step="0.01">
                 </br>
                 <canvas id="visualizerNoMod" width="500" height="100"></canvas> 
+                <p>original sounds</p>
                 </br>
                 <canvas id="visualizer" width="500" height="100"></canvas> 
+                <p>with effects</p>
             </div>
         </div>
         <div class="row">
