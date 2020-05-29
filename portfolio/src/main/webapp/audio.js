@@ -108,7 +108,6 @@ function initializeLofi() {
 }
 
 function initNodes() {
-
     console.log("initNodes clicked");
     //create analyzer node
     analyser = audioContext.createAnalyser();
@@ -203,14 +202,14 @@ function updateBeat(lofi) {
     connectTracks("beat");
 }
 
-function test() {
-    if (document.getElementById('chk1').checked) {
-        console.log("checked");
-    } 
-    else {
-        console.log("not checked");
-    }
-}
+// function test() {
+//     if (document.getElementById('chk1').checked) {
+//         console.log("checked");
+//     } 
+//     else {
+//         console.log("not checked");
+//     }
+// }
 
 function updateMonologue() {
     // load sound
@@ -297,13 +296,11 @@ function draw() {
     var barHeight; 
     var barHeightNoMod; 
     var x = 0; 
+
     for(var i = 0; i < bufferLength; i++) { 
         //cut height in half to fit on canvas
         barHeight = dataArray[i]/2; 
         barHeightNoMod = dataArrayNoMod[i]/2; 
-        // if (barHeight > 0) {
-        //     console.log(barHeight);
-        // }
 
         canvasCtx.fillStyle = 'rgb(198,70,' + (barHeight+100) + ')'; 
         canvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight/2); 
@@ -322,4 +319,3 @@ document.addEventListener('readystatechange', event => {
         setInterval(draw,1);
     }
 });
- 
