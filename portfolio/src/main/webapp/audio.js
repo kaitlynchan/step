@@ -68,6 +68,7 @@ playButton.addEventListener('click', function() {
 
     // play or pause track depending on state
     if (!play) {
+        play = true;
         console.log("entered play loop");
         audioElement.play();
         audioContext.resume();
@@ -82,12 +83,12 @@ playButton.addEventListener('click', function() {
         } else {
             removeMonologue();
         }
-        play = true;
+        
     } else if (play) {
+        play = false;
         console.log("exited play loop");
         audioElement.pause();
         audioContext.suspend();
-        play = false;
     }
 }, false);
 
