@@ -22,9 +22,25 @@
 async function getGreeting() {
   const response = await fetch('/data');
   console.log(response);
-  const greeting = await response.text();
-  console.log(greeting);
-  document.getElementById('greeting-container').innerText = greeting;
+  //parse response as json
+  const comments = await response.json();
+  console.log(comments);
+  const commentsListElement = document.getElementById('comment-container');
+  commentsListElement.innerHTML = '';
+  commentsListElement.appendChild(
+        createListElement('Comment 1: ' + comments[0]));
+  commentsListElement.appendChild(
+        createListElement('Comment 2: ' + comments[1]));
+  commentsListElement.appendChild(
+        createListElement('Comment 3: ' + comments[2]));
+
+}
+
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
 
 //lofi object
