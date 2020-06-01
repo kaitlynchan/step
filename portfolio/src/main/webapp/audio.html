@@ -17,7 +17,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body>
+  <body onload="getGreeting()">
     <div class="container">
         <div class="row" id ="header">
             <div class="col">
@@ -26,7 +26,8 @@
         </div>
         <div class="row">
             <div class="col">
-                <p>Click the Song/Filter/Monologue/Beat buttons to select your track.</p>
+                <div id="greeting-container"></div>
+                 <p>Click the Song/Filter/Monologue/Beat buttons to select your track.</p>
                  <p>Make sure to select the checkbox to implement your effects.</p>
                  <p>Click Generate Lofi to play/pause and implement your changes.</p>
                  <p>Enjoy!</p>

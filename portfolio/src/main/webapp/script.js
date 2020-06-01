@@ -16,6 +16,17 @@
  * Adds a random greeting to the page.
  */
 
+
+
+//use fetch to request data from the server
+async function getGreeting() {
+  const response = await fetch('/data');
+  console.log(response);
+  const greeting = await response.text();
+  console.log(greeting);
+  document.getElementById('greeting-container').innerText = greeting;
+}
+
 //lofi object
 const lofi = {song:"", filter:"", beat:"", monologue:""};
 
