@@ -17,7 +17,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body onload="getGreeting()">
+  <body onload="updateComments()">
     <div class="container">
         <div class="row" id ="header">
             <div class="col">
@@ -26,11 +26,32 @@
         </div>
         <div class="row">
             <div class="col">
-                <div id="comment-container"></div>
                  <p>Click the Song/Filter/Monologue/Beat buttons to select your track.</p>
                  <p>Make sure to select the checkbox to implement your effects.</p>
                  <p>Click Generate Lofi to play/pause and implement your changes.</p>
                  <p>Enjoy!</p>
+            </div>
+        </div>
+        <div class = "row">
+            <div class="col">
+                <h2>Submit Comments/Feedback:</h2>
+                <form action="/data" method="POST">
+                <div class="form-group">
+                    <label for="text">Name:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
+                </div>
+                <div class="form-group">
+                    <label for="text">Comment:</label>
+                    <input type="text" class="form-control" id="comment" placeholder="Enter comment" name="comment">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2>Comments/Feedback:</h2>
+                <div id="comment-container"></div>
             </div>
         </div>
         <div class="row">

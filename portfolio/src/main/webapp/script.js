@@ -19,21 +19,18 @@
 
 
 //use fetch to request data from the server
-async function getGreeting() {
+async function updateComments() {
   const response = await fetch('/data');
   console.log(response);
   //parse response as json
   const comments = await response.json();
   console.log(comments);
+  // Build comments
   const commentsListElement = document.getElementById('comment-container');
   commentsListElement.innerHTML = '';
-  commentsListElement.appendChild(
-        createListElement('Comment 1: ' + comments[0]));
-  commentsListElement.appendChild(
-        createListElement('Comment 2: ' + comments[1]));
-  commentsListElement.appendChild(
-        createListElement('Comment 3: ' + comments[2]));
-
+  comments.forEach((item) => {
+    commentsListElement.appendChild(createListElement(item));
+  });
 }
 
 /** Creates an <li> element containing text. */
