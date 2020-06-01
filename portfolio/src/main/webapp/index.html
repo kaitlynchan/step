@@ -2,17 +2,94 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>My Portfolio</title>
+    <title>Kaitlyn Chan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Bootstrap CDN-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
   </head>
   <body>
-    <div id="content">
-      <h1>My Portfolio</h1>
-      <p>This is my portfolio.</p>
-      <p>Click here to get a random message:</p>
-      <button onclick="addRandomGreeting()">Hello</button>
-      <div id="greeting-container"></div>
+    <div class="container">
+        <div class="row" id ="header">
+            <div class="col">
+                <h1>Lofi</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>Let your music chill out.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-dark" onclick="selectSong()">Song</button>
+                
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-dark" onclick="selectFilter()">Filter</button>
+                
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-dark" onclick="selectMonologue()">Monologue</button>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-dark" onclick="selectBeat()">Beat</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div id="song-container"></div>
+            </div>
+            <div class="col">
+                <div id="filter-container"></div>
+                <input id="chkfilter" type="checkbox" data-toggle="toggle"> 
+            </div>
+            <div class="col">
+                <div id="monologue-container"></div>
+                <input id="chkmonologue" type="checkbox" data-toggle="toggle"> 
+            </div>
+            <div class="col">
+                <div id="beat-container"></div>
+                <input id="chkbeat" type="checkbox" data-toggle="toggle"> 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <img id = "totoro" src="/images/index.gif">
+            </div>
+            <div class="col-8">
+
+                <button id = "genLofi" onclick="lofiStatus()">Generate Lofi</button>
+                <div id="lofi-container"></div>
+                </br>
+                <input type="range" id="volume" min="0" max="2" value="1" step="0.01">
+                </br>
+                <canvas id="visualizerNoMod" width="500" height="100"></canvas> 
+                <p>original sounds</p>
+                </br>
+                <canvas id="visualizer" width="500" height="100"></canvas> 
+                <p>with effects</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+            <footer class="footer">
+                    <span class="text-muted"><a href="about.html">About</a></span>
+                    <span class="text-muted"><a href="audio.html">Instructions</a></span>
+            </footer>
+            </div>
+        </div>
     </div>
+    <script src="audio.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

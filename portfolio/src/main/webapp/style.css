@@ -1,9 +1,34 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
+body {
+    font-family: 'Cutive Mono', monospace;
 }
 
-#greeting-container {
-  margin-top: 20px;
+.footer a {
+    padding-right: 10px;
+}
+
+a {
+    color: #917bab;
+}
+
+a:hover {
+    color: #d0b0f7;
+    text-decoration: none;
+}
+
+#header {
+    margin-top: 60px;
+}
+
+#totoro {
+    width: 100%;
+}
+
+.footer {
+  width: 100%;
+  height: 60px; /* Set the fixed height of the footer here */
+  line-height: 60px; /* Vertically center the text there */
+}
+
+.row {
+    margin-bottom: 10px;
 }
