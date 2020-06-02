@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Adds a random greeting to the page.
- */
-
-
-
 //use fetch to request data from the server
 async function updateComments() {
   const response = await fetch('/data');
