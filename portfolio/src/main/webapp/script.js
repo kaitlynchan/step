@@ -22,16 +22,29 @@ async function updateComments() {
   // Build comments
   const commentsListElement = document.getElementById('comment-container');
   commentsListElement.innerHTML = '';
-  comments.forEach((item) => {
-    commentsListElement.appendChild(createListElement(item));
+  comments.forEach((comment) => {
+    commentsListElement.appendChild(createCommentElement(comment));
   });
 }
 
 /** Creates an <li> element containing text. */
-function createListElement(text) {
-  const liElement = document.createElement('li');
-  liElement.innerText = text;
-  return liElement;
+function createCommentElement(comment) {
+  const commentElement = document.createElement('li');
+  commentElement.className = 'comment';
+
+  const nameElement = document.createElement('span');
+  nameElement.innerText = comment.name;
+  commentElement.appendChild(nameElement);
+
+  const textElement = document.createElement('span');
+  textElement.innerText = comment.text;
+  commentElement.appendChild(textElement);
+
+  const timeElement = document.createElement('span');
+  timeElement.innerText = comment.timestamp;
+  commentElement.appendChild(timeElement);
+
+  return commentElement;
 }
 
 //lofi object
