@@ -1,3 +1,15 @@
+#numCommentForm {
+    width: 50%;
+}
+
+.comment_name {
+    font-weight: bold;
+}
+
+.comment_date {
+    font-style: italic;
+}
+
 body {
     font-family: 'Cutive Mono', monospace;
 }

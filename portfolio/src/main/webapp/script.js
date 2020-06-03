@@ -14,7 +14,9 @@
 
 //use fetch to request data from the server
 async function updateComments() {
-  const response = await fetch('/data');
+  var numComments = document.getElementById("nC").value;
+  var queryString = '/data?numComments=' + numComments;
+  const response = await fetch(queryString);
   console.log(response);
   //parse response as json
   const comments = await response.json();
@@ -22,29 +24,59 @@ async function updateComments() {
   // Build comments
   const commentsListElement = document.getElementById('comment-container');
   commentsListElement.innerHTML = '';
-  comments.forEach((comment) => {
-    commentsListElement.appendChild(createCommentElement(comment));
-  });
+  if (comments !== "invalid numComments") {
+        comments.forEach((comment) => {
+        commentsListElement.appendChild(createCommentElement(comment));
+    });
+  }
 }
 
 /** Creates an <li> element containing text. */
 function createCommentElement(comment) {
-  const commentElement = document.createElement('li');
+  const commentElement = document.createElement('div');
   commentElement.className = 'comment';
 
-  const nameElement = document.createElement('span');
+  const nameElement = document.createElement('p');
+  nameElement.className = 'comment_name';
   nameElement.innerText = comment.name;
   commentElement.appendChild(nameElement);
 
-  const textElement = document.createElement('span');
+  const textElement = document.createElement('p');
   textElement.innerText = comment.text;
   commentElement.appendChild(textElement);
 
-  const timeElement = document.createElement('span');
-  timeElement.innerText = comment.timestamp;
+  const timeElement = document.createElement('p');
+  timeElement.className = 'comment_date';
+  var date = new Date(comment.timestamp);
+  timeElement.innerText = date.toLocaleString();
   commentElement.appendChild(timeElement);
 
+  const deleteButtonElement = document.createElement('button');
+  deleteButtonElement.className = 'close';
+  deleteButtonElement.innerHTML = '<span aria-hidden="true">&times;</span>';
+  
+  deleteButtonElement.addEventListener('click', () => {
+    deleteComment(comment);
+
+    // Remove the comment from the DOM.
+    commentElement.remove();
+  });
+
+  nameElement.appendChild(deleteButtonElement);
+
   return commentElement;
+}
+
+//send POST request to /delete-data
+//fetch comments back from the server
+async function deleteComment(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  const request = new Request('/delete-data', {method: 'POST', body: params});
+  console.log(request.method);
+  const response = await fetch(request);
+  console.log(response);
+  updateComments();
 }
 
 //lofi object

@@ -42,7 +42,7 @@
                 </div>
                 <div class="form-group">
                     <label for="text">Comment:</label>
-                    <input type="text" class="form-control" id="text" placeholder="Enter comment" name="text">
+                    <textarea class="form-control" id="text" placeholder="Enter comment" name="text" rows="3"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
@@ -51,6 +51,18 @@
         <div class="row">
             <div class="col">
                 <h2>Comments/Feedback:</h2>
+                  <form class="form-inline" id="numCommentForm">
+                    <div class="form-group">
+                        <label for="nC">Number of Comments:</label>
+                        <select class="form-control" id="nC" name="numComments" onchange=updateComments()>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                  </form>
                 <div id="comment-container"></div>
             </div>
         </div>
