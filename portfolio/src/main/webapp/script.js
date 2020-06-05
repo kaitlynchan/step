@@ -13,11 +13,43 @@
 // limitations under the License.
 
 //use fetch to request data from the server
+async function checkLogin() {
+    //if user is logged in, unhide comment form
+    const response = await fetch('/login');
+    const login = await response.json();
+    console.log(login);
+    //hide form if not logged in
+    if (!login.loginStatus) {
+        document.getElementById("commentForm").style.display = "none";
+
+        const loginElement = document.getElementById("loginLink");
+        loginElement.style.display = "block";
+        loginElement.innerHTML = '';
+        const linkElement = document.createElement('div');
+        linkElement.className = 'col';
+        linkElement.innerHTML = '<a href=\"' + login.loginLink + '\">Login to Comment</a>';
+        loginElement.appendChild(linkElement);
+
+    } else {
+        document.getElementById("commentForm").style.display = "block";
+
+        const logoutElement = document.getElementById("loginLink");
+        logoutElement.style.display = "block";
+        logoutElement.innerHTML = '';
+        const linkElement = document.createElement('div');
+        linkElement.className = 'col';
+        linkElement.innerHTML = '<a href=\"' + login.logoutLink + '\">Logout Here</a>';
+        logoutElement.appendChild(linkElement);
+    }
+
+}
+
+//body onload()
 async function updateComments() {
+  checkLogin();
   var numComments = document.getElementById("nC").value;
   var queryString = '/data?numComments=' + numComments;
   const response = await fetch(queryString);
-  console.log(response);
   //parse response as json
   const comments = await response.json();
   console.log(comments);

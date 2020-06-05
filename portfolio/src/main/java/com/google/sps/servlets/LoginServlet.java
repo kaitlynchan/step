@@ -21,28 +21,45 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
+import com.google.sps.data.Login;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html");
+    //response.setContentType("text/json");
+    //ArrayList<Login> login = new ArrayList<>();
 
     UserService userService = UserServiceFactory.getUserService();
-    if (userService.isUserLoggedIn()) {
-      String userEmail = userService.getCurrentUser().getEmail();
-      String urlToRedirectToAfterUserLogsOut = "/login";
-      String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
-      //logout button
-      response.getWriter().println("<p>Hello " + userEmail + "!</p>");
-      response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
-    } else {
-      String urlToRedirectToAfterUserLogsIn = "/login";
-      String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+    boolean loginStatus = userService.isUserLoggedIn();
 
-      response.getWriter().println("<p>Hello stranger.</p>");
-      response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
-    }
+    String urlToRedirectToAfterUserLogsOut = "/audio.html";
+    String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
+    
+    String urlToRedirectToAfterUserLogsIn = "/audio.html";
+    String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+
+    Login login = new Login(loginStatus, logoutUrl, loginUrl);
+
+    String json = new Gson().toJson(login);
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
+
+    // if (userService.isUserLoggedIn()) {
+    //   String userEmail = userService.getCurrentUser().getEmail();
+    //   String urlToRedirectToAfterUserLogsOut = "/login";
+    //   String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
+    //   //logout button after logging in
+    //   response.getWriter().println("<p>Hello " + userEmail + "!</p>");
+    //   response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+    // } else {
+    //   String urlToRedirectToAfterUserLogsIn = "/login";
+    //   String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+    //   //login button after logging out
+    //   response.getWriter().println("<p>Hello stranger.</p>");
+    //   response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+    // }
   }
 }
