@@ -84,10 +84,14 @@ function createCommentElement(comment) {
   deleteButtonElement.innerHTML = '<span aria-hidden="true">&times;</span>';
   
   deleteButtonElement.addEventListener('click', () => {
-    deleteComment(comment);
+    deleteComment(comment).then(success => {
+        // Remove the comment from the DOM.
+        console.log("callback: " +success);
+        if (success) {
+            commentElement.remove();
+        }
+    });
 
-    // Remove the comment from the DOM.
-    commentElement.remove();
   });
 
   nameElement.appendChild(deleteButtonElement);
@@ -110,6 +114,8 @@ async function deleteComment(comment) {
   } else {
     alert("Invalid access to delete comment");
   }
+  console.log("deleteComment: " + deleteSuccess);
+  return deleteSuccess;
 }
 
 //lofi object

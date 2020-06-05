@@ -39,8 +39,17 @@ public class DeleteCommentServlet extends HttpServlet {
     long id = Long.parseLong(request.getParameter("id"));
     String commentEmail = request.getParameter("email");
 
-    String userEmail = userService.getCurrentUser().getEmail();
+    
     boolean deleteSuccess = false;
+
+    if (!userService.isUserLoggedIn()) {
+        String json = new Gson().toJson(deleteSuccess);
+        response.setContentType("application/json;");
+        response.getWriter().println(json);
+        return;
+    }
+
+    String userEmail = userService.getCurrentUser().getEmail();
 
     //only delete if commentEmail matches user email or admin, return status
     if (commentEmail.equals(userEmail) || userService.isUserAdmin()) {
