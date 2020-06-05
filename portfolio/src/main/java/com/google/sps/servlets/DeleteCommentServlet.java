@@ -23,6 +23,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.gson.Gson;
+
 
 /** Servlet responsible for deleting tasks. */
 @WebServlet("/delete-data")
@@ -30,10 +34,24 @@ public class DeleteCommentServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    long id = Long.parseLong(request.getParameter("id"));
+    UserService userService = UserServiceFactory.getUserService();
 
-    Key commentEntityKey = KeyFactory.createKey("Comment", id);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.delete(commentEntityKey);
+    long id = Long.parseLong(request.getParameter("id"));
+    String commentEmail = request.getParameter("email");
+
+    String userEmail = userService.getCurrentUser().getEmail();
+    boolean deleteSuccess = false;
+
+    //only delete if commentEmail matches user email or admin, return status
+    if (commentEmail.equals(userEmail) || userService.isUserAdmin()) {
+        Key commentEntityKey = KeyFactory.createKey("Comment", id);
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.delete(commentEntityKey);
+        deleteSuccess = true;
+    }
+
+    String json = new Gson().toJson(deleteSuccess);
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
   }
 }

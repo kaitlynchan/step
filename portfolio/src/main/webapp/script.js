@@ -96,15 +96,20 @@ function createCommentElement(comment) {
 }
 
 //send POST request to /delete-data
-//fetch comments back from the server
 async function deleteComment(comment) {
+  //only allow the user to delete only her own comments
   const params = new URLSearchParams();
   params.append('id', comment.id);
+  params.append('email', comment.email);
   const request = new Request('/delete-data', {method: 'POST', body: params});
-  console.log(request.method);
   const response = await fetch(request);
-  console.log(response);
-  updateComments();
+  const deleteSuccess = await response.json();
+  if (deleteSuccess) {
+    //fetch comments back from the server
+    updateComments();
+  } else {
+    alert("Invalid access to delete comment");
+  }
 }
 
 //lofi object
