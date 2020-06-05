@@ -29,6 +29,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
@@ -37,7 +39,6 @@ public class DataServlet extends HttpServlet {
 
   private int limitComments(HttpServletRequest request) {
     String numCommentsString = request.getParameter("numComments");
-    
     int numComments;
     try {
         numComments = Integer.parseInt(numCommentsString);
@@ -45,12 +46,10 @@ public class DataServlet extends HttpServlet {
         System.err.println("Could not convert to int: " + numCommentsString);
         return -1;
     }
-
     if (numComments < 1) {
         System.err.println("Comment number is out of range: " + numCommentsString);
         return -1;
     }
-
     return numComments;
   }
     
@@ -60,12 +59,10 @@ public class DataServlet extends HttpServlet {
     int numComments = limitComments(request);
     System.out.println(numComments);
 
+    //probably obsolete
     if (numComments == -1) {
-      //read the comment data from the server and display
-      String json = new Gson().toJson("invalid numComments");
-      response.setContentType("application/json;");
-      response.getWriter().println(json);
-      return;
+        //for testing purposes
+        numComments = 5;
     }
 
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
@@ -78,27 +75,17 @@ public class DataServlet extends HttpServlet {
     ArrayList<Comment> comments = new ArrayList<>();
     int counter = 0;
     while (resultsList.hasNext() && counter < numComments) {
-        //System.out.println(counter);
         Entity entity = resultsList.next();
         long id = entity.getKey().getId();
         String name = (String) entity.getProperty("name");
         String text = (String) entity.getProperty("text");
         long timestamp = (long) entity.getProperty("timestamp");
+        String email = (String) entity.getProperty("email");
 
-        Comment comment = new Comment(id, name, text, timestamp);
+        Comment comment = new Comment(id, name, text, timestamp, email);
         comments.add(comment);
         counter += 1;
     }
-
-    // for (Entity entity : results.asIterable()) {
-    //   long id = entity.getKey().getId();
-    //   String name = (String) entity.getProperty("name");
-    //   String text = (String) entity.getProperty("text");
-    //   long timestamp = (long) entity.getProperty("timestamp");
-
-    //   Comment comment = new Comment(id, name, text, timestamp);
-    //   comments.add(comment);
-    // }
 
     //read the comment data from the server and display
     String json = new Gson().toJson(comments);
@@ -108,9 +95,12 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
     //get inputs from the form
     String inputName = request.getParameter("name");
     String inputComment = request.getParameter("text");
+    //can only post comments if logged in
+    String email = userService.getCurrentUser().getEmail();
     //can do data processing here
     
     long timestamp = System.currentTimeMillis();
@@ -118,6 +108,7 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("name", inputName);
     commentEntity.setProperty("text", inputComment);
+    commentEntity.setProperty("email", email);
     commentEntity.setProperty("timestamp", timestamp);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

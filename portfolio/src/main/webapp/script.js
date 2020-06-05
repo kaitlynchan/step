@@ -18,28 +18,18 @@ async function checkLogin() {
     const response = await fetch('/login');
     const login = await response.json();
     console.log(login);
-    //hide form if not logged in
+
+    const loginElement = document.getElementById("loginLink");
+    loginElement.style.display = "block";
+    loginElement.innerHTML = '';
+
+
     if (!login.loginStatus) {
         document.getElementById("commentForm").style.display = "none";
-
-        const loginElement = document.getElementById("loginLink");
-        loginElement.style.display = "block";
-        loginElement.innerHTML = '';
-        const linkElement = document.createElement('div');
-        linkElement.className = 'col';
-        linkElement.innerHTML = '<a href=\"' + login.loginLink + '\">Login to Comment</a>';
-        loginElement.appendChild(linkElement);
-
+        loginElement.innerHTML = '<a href=\"' + login.loginLink + '\">Login to Comment</a>';
     } else {
         document.getElementById("commentForm").style.display = "block";
-
-        const logoutElement = document.getElementById("loginLink");
-        logoutElement.style.display = "block";
-        logoutElement.innerHTML = '';
-        const linkElement = document.createElement('div');
-        linkElement.className = 'col';
-        linkElement.innerHTML = '<a href=\"' + login.logoutLink + '\">Logout Here</a>';
-        logoutElement.appendChild(linkElement);
+        loginElement.innerHTML = '<a href=\"' + login.logoutLink + '\">Logout Here</a>';
     }
 
 }
@@ -47,8 +37,9 @@ async function checkLogin() {
 //body onload()
 async function updateComments() {
   checkLogin();
-  var numComments = document.getElementById("nC").value;
+  var numComments = await document.getElementById("nC").value;
   var queryString = '/data?numComments=' + numComments;
+  console.log(queryString);
   const response = await fetch(queryString);
   //parse response as json
   const comments = await response.json();
@@ -72,6 +63,11 @@ function createCommentElement(comment) {
   nameElement.className = 'comment_name';
   nameElement.innerText = comment.name;
   commentElement.appendChild(nameElement);
+
+  const emailElement = document.createElement('p');
+  emailElement.className = 'comment_email';
+  emailElement.innerText = comment.email;
+  commentElement.appendChild(emailElement);
 
   const textElement = document.createElement('p');
   textElement.innerText = comment.text;
