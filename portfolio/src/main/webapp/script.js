@@ -39,16 +39,27 @@ async function checkLogin() {
     }
 }
 
+async function fetchBlobstoreUrl() {
+    const response = await fetch('/blobstore-upload-url');
+    const uploadUrl = await response.text();
+    const commentForm = await document.getElementById('imgUploadForm');
+    commentForm.action = uploadUrl;
+    console.log(uploadUrl);
+}
+
 //body onload()
 async function updateComments() {
   checkLogin();
   var numComments = await document.getElementById("nC").value;
+  //GET
   var queryString = '/data?numComments=' + numComments;
   console.log(queryString);
   const response = await fetch(queryString);
   //parse response as json
   const comments = await response.json();
   console.log(comments);
+  await fetchBlobstoreUrl();
+  console.log("done!");
   // Build comments
   const commentsListElement = document.getElementById('comment-container');
   commentsListElement.innerHTML = '';
@@ -77,6 +88,13 @@ function createCommentElement(comment) {
   const textElement = document.createElement('p');
   textElement.innerText = comment.text;
   commentElement.appendChild(textElement);
+
+  if (comment.imageUrl) {
+    console.log("wow an image");
+    const imgElement = document.createElement('img');
+    imgElement.src = comment.imageUrl;
+    commentElement.appendChild(imgElement);
+  }
 
   const timeElement = document.createElement('p');
   timeElement.className = 'comment_date';

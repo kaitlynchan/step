@@ -35,7 +35,8 @@
         <div class = "row" id="commentForm">
             <div class="col">
                 <h2>Submit Comments/Feedback:</h2>
-                <form action="/data" method="POST">
+                <!-- <form action="/data" method="POST"> -->
+                <form method="POST" id="imgUploadForm" enctype="multipart/form-data">
                 <!-- <div class="form-group">
                     <label for="text">Name:</label>
                     <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
@@ -44,6 +45,19 @@
                     <label for="text">Comment:</label>
                     <textarea class="form-control" id="text" placeholder="Enter comment" name="text" rows="3"></textarea>
                 </div>
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile" name="image">
+                        <label class="custom-file-label" for="customFile">Choose file</label>
+                    </div>
+                </div>
+                <script>
+                    // Add the following code if you want the name of the file appear on select
+                    $(".custom-file-input").on("change", function() {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                    });
+                </script>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
