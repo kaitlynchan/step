@@ -22,16 +22,21 @@ async function checkLogin() {
     const loginElement = document.getElementById("loginLink");
     loginElement.style.display = "block";
     loginElement.innerHTML = '';
-
-
+    //not logged in
     if (!login.loginStatus) {
         document.getElementById("commentForm").style.display = "none";
         loginElement.innerHTML = '<a href=\"' + login.loginLink + '\">Login to Comment</a>';
-    } else {
-        document.getElementById("commentForm").style.display = "block";
-        loginElement.innerHTML = '<a href=\"' + login.logoutLink + '\">Logout Here</a>';
+    } 
+    //logged in but no nickname
+    else if (!login.nickname) {
+        document.getElementById("commentForm").style.display = "none";
+        loginElement.innerHTML = '<p>Set your nickname <a href=\"/nickname\">here</a>.</p>';
     }
-
+    //logged in with nickname
+    else {
+        document.getElementById("commentForm").style.display = "block";
+        loginElement.innerHTML = '<a href=\"' + login.logoutLink + '\">Logout Here</a> <p>Hi, '+ login.nickname + '. Change your nickname <a href=\"/nickname\">here</a>.</p>';
+    }
 }
 
 //body onload()
@@ -64,10 +69,10 @@ function createCommentElement(comment) {
   nameElement.innerText = comment.name;
   commentElement.appendChild(nameElement);
 
-  const emailElement = document.createElement('p');
-  emailElement.className = 'comment_email';
-  emailElement.innerText = comment.email;
-  commentElement.appendChild(emailElement);
+//   const emailElement = document.createElement('p');
+//   emailElement.className = 'comment_email';
+//   emailElement.innerText = comment.email;
+//   commentElement.appendChild(emailElement);
 
   const textElement = document.createElement('p');
   textElement.innerText = comment.text;
@@ -86,14 +91,11 @@ function createCommentElement(comment) {
   deleteButtonElement.addEventListener('click', () => {
     deleteComment(comment).then(success => {
         // Remove the comment from the DOM.
-        console.log("callback: " +success);
         if (success) {
             commentElement.remove();
         }
     });
-
   });
-
   nameElement.appendChild(deleteButtonElement);
 
   return commentElement;
@@ -114,7 +116,6 @@ async function deleteComment(comment) {
   } else {
     alert("Invalid access to delete comment");
   }
-  console.log("deleteComment: " + deleteSuccess);
   return deleteSuccess;
 }
 

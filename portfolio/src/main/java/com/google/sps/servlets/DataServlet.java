@@ -66,7 +66,6 @@ public class DataServlet extends HttpServlet {
     }
 
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
-
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
@@ -81,8 +80,9 @@ public class DataServlet extends HttpServlet {
         String text = (String) entity.getProperty("text");
         long timestamp = (long) entity.getProperty("timestamp");
         String email = (String) entity.getProperty("email");
+        String userID = (String) entity.getProperty("userID");
 
-        Comment comment = new Comment(id, name, text, timestamp, email);
+        Comment comment = new Comment(id, name, text, timestamp, email, userID);
         comments.add(comment);
         counter += 1;
     }
@@ -96,8 +96,12 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
+    String userID = userService.getCurrentUser().getUserId();
     //get inputs from the form
-    String inputName = request.getParameter("name");
+    //String inputName = request.getParameter("name");
+    String inputName = getUserNickname(userID);
+    System.out.println("name: " + inputName);
+
     String inputComment = request.getParameter("text");
     //can only post comments if logged in
     String email = userService.getCurrentUser().getEmail();
@@ -110,6 +114,7 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("text", inputComment);
     commentEntity.setProperty("email", email);
     commentEntity.setProperty("timestamp", timestamp);
+    commentEntity.setProperty("userID", userID);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
@@ -117,4 +122,20 @@ public class DataServlet extends HttpServlet {
     // Redirect back to the HTML page.
     response.sendRedirect("/audio.html");
   }
+
+      /** Returns the nickname of the user with id, or null if the user has not set a nickname. */
+  private String getUserNickname(String id) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query =
+        new Query("UserInfo")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
+    PreparedQuery results = datastore.prepare(query);
+    Entity entity = results.asSingleEntity();
+    if (entity == null) {
+      return "[NO NAME]";
+    }
+    String nickname = (String) entity.getProperty("nickname");
+    return nickname;
+  }
+
 }

@@ -23,14 +23,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.sps.data.Login;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //response.setContentType("text/json");
-    //ArrayList<Login> login = new ArrayList<>();
 
     UserService userService = UserServiceFactory.getUserService();
     boolean loginStatus = userService.isUserLoggedIn();
@@ -41,25 +44,33 @@ public class LoginServlet extends HttpServlet {
     String urlToRedirectToAfterUserLogsIn = "/audio.html";
     String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
-    Login login = new Login(loginStatus, logoutUrl, loginUrl);
+    String nickname = null;
+    //if logged in, get the nickname
+    if (userService.isUserLoggedIn()) {
+        nickname = getUserNickname(userService.getCurrentUser().getUserId());
+        //System.out.println("userid: "+ userService.getCurrentUser().getUserId());
+    }
+
+    //create login object with status and links
+    Login login = new Login(loginStatus, logoutUrl, loginUrl, nickname);
 
     String json = new Gson().toJson(login);
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
 
-    // if (userService.isUserLoggedIn()) {
-    //   String userEmail = userService.getCurrentUser().getEmail();
-    //   String urlToRedirectToAfterUserLogsOut = "/login";
-    //   String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
-    //   //logout button after logging in
-    //   response.getWriter().println("<p>Hello " + userEmail + "!</p>");
-    //   response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
-    // } else {
-    //   String urlToRedirectToAfterUserLogsIn = "/login";
-    //   String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
-    //   //login button after logging out
-    //   response.getWriter().println("<p>Hello stranger.</p>");
-    //   response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
-    // }
+    /** Returns the nickname of the user with id, or null if the user has not set a nickname. */
+  private String getUserNickname(String id) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query =
+        new Query("UserInfo")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
+    PreparedQuery results = datastore.prepare(query);
+    Entity entity = results.asSingleEntity();
+    if (entity == null) {
+      return null;
+    }
+    String nickname = (String) entity.getProperty("nickname");
+    return nickname;
   }
 }

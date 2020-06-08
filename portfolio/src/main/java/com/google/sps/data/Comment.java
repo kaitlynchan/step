@@ -22,12 +22,14 @@ public final class Comment {
   private final String  text;
   private final long timestamp;
   private final String  email;
+  private final String userID;
 
-  public Comment(long id, String name, String text, long timestamp, String email) {
+  public Comment(long id, String name, String text, long timestamp, String email, String userID) {
     this.id = id;
     this.name = name;
     this.text = text;
     this.timestamp = timestamp;
     this.email = email;
+    this.userID = userID;
   }
 }

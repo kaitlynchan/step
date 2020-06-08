@@ -20,10 +20,12 @@ public final class Login {
   private final boolean loginStatus;
   private final String  logoutLink;
   private final String  loginLink;
+  private final String  nickname;
 
-  public Login(boolean loginStatus, String logoutLink, String loginLink) {
+  public Login(boolean loginStatus, String logoutLink, String loginLink, String nickname) {
     this.loginStatus = loginStatus;
     this.logoutLink = logoutLink;
     this.loginLink = loginLink;
+    this.nickname = nickname;
   }
 }
