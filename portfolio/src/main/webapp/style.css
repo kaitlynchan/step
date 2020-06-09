@@ -1,3 +1,10 @@
+#map {
+  border: thin solid black;
+  height: 250px;
+  width: 250px;
+}
+
+
 #numCommentForm {
     width: 50%;
 }

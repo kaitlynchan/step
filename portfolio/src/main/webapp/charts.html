@@ -5,7 +5,6 @@
     <title>Kaitlyn Chan</title>
     <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="charts.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Bootstrap CDN-->
     <!-- Latest compiled and minified CSS -->
@@ -17,17 +16,24 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWwsqc8sfwPsjMWBa07pz_ZjA_jXAIhB0&libraries=places"></script>
+    <script src="charts.js"></script>
   </head>
-  <body>
+  <body onload="createMap();">
     <div class="container">
         <div class="row" id ="header">
             <div class="col">
-                <h1>Charts</h1>
+                <h1>Charts and Maps and Stuff</h1>
             </div>
         </div>
         <div class="row">
-            <div class="col" id="chart-container">
-                
+            <div class="col" id="chart-container"></div>
+        </div>
+        <div class="row">
+            <div class="col"><p>national parks near me :)</p></div>
+        </div>
+        <div class="row">
+            <div class="col-6" id="map">
             </div>
         </div>
         <div class="row">
@@ -42,6 +48,5 @@
             </div>
         </div>
     </div>
-    
   </body>
 </html>

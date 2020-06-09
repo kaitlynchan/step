@@ -16,6 +16,10 @@
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 
+var map;
+var service;
+var infowindow;
+
 /** Creates a chart and adds it to the page. */
 function drawChart() {
   fetch('/covid-data').then(response => response.json())
@@ -40,5 +44,42 @@ function drawChart() {
     const chart = new google.visualization.LineChart(
         document.getElementById('chart-container'));
     chart.draw(data, options);
+  });
+}
+
+/** Creates a map and adds it to the page. */
+function createMap() {
+    infowindow = new google.maps.InfoWindow();
+
+    map = new google.maps.Map(
+        document.getElementById('map'),
+        {center: {lat: 37.422, lng: -122.084}, zoom: 8});
+
+    //text based query
+    var request = {
+        query: 'national park',
+    };
+    
+    service = new google.maps.places.PlacesService(map);
+
+    service.textSearch(request, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+        }
+        map.setCenter(results[0].geometry.location);
+        }
+    });
+}
+
+function createMarker(place) {
+  var marker = new google.maps.Marker({
+    map: map,
+    position: place.geometry.location
+  });
+  console.log(place.name);
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(place.name);
+    infowindow.open(map, this);
   });
 }
