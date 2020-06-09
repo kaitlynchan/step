@@ -18,22 +18,27 @@ google.charts.setOnLoadCallback(drawChart);
 
 /** Creates a chart and adds it to the page. */
 function drawChart() {
-  const data = new google.visualization.DataTable();
-  data.addColumn('string', 'Animal');
-  data.addColumn('number', 'Count');
-        data.addRows([
-          ['Lions', 10],
-          ['Tigers', 5],
-          ['Bears', 15]
-        ]);
+  fetch('/covid-data').then(response => response.json())
+  .then((covidCount) => {
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'Date');
+    data.addColumn('number', 'Number of Cases');
+    Object.keys(covidCount).forEach((date) => {
+      data.addRow([date, covidCount[date]]);
+    });
+    data.sort([{column:1}]);
+    const options = {
+      'title': 'COVID-19 Cases in CA',
+      'height':500,
+      'animation': {
+        duration: 2000,
+        startup: true,
+        easing: 'in'
+      },
+    };
 
-  const options = {
-    'title': 'Zoo Animals',
-    'width':500,
-    'height':400
-  };
-
-  const chart = new google.visualization.PieChart(
-      document.getElementById('chart-container'));
-  chart.draw(data, options);
+    const chart = new google.visualization.LineChart(
+        document.getElementById('chart-container'));
+    chart.draw(data, options);
+  });
 }
