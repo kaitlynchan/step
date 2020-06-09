@@ -118,6 +118,7 @@ public class DataServlet extends HttpServlet {
     String inputComment = request.getParameter("text");
     // Get the URL of the image that the user uploaded to Blobstore.
     String imageUrl = getUploadedFileUrl(request, "image");
+    
     //System.out.println("image url:" + imageUrl);
 
     //can only post comments if logged in
