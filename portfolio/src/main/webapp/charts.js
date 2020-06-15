@@ -26,6 +26,8 @@ var resultsDistances;
 var resultsDurations;
 var resultsArray;
 var promise;
+var markers = [];
+var chart;
 
 
 /** Creates a chart and adds it to the page. */
@@ -79,13 +81,22 @@ function drawChart() {
       },
       'hAxis': {title: 'Distance [miles]'},
       'vAxis': {title: 'Rating'},
-      'legend': 'none'
+      'legend': 'none',
+      'colors': ['#917bab']
     };
 
-    const chart = new google.visualization.ScatterChart(
+    chart = new google.visualization.ScatterChart(
         document.getElementById('chart-container'));
     chart.draw(data, options);
 
+}
+
+//on click of html element
+function selectResult(index) {
+    console.log(index);
+    //erase prev selection
+    chart.setSelection(null);
+    chart.setSelection([{row:index,column:null}]);
 }
 
 /** Creates a map and adds it to the page. */
@@ -123,14 +134,31 @@ function createMap() {
     directionsRenderer.setMap(map); // Existing map object displays directions
 }
 
+async function inputQuery() {
+    console.log("button clicked");
+    const userInput= await document.getElementById("queryText").value;
+    const response = await console.log(userInput);
+    // const params = new URLSearchParams();
+    // params.append('text', userInput);
+    // const request = new Request('/query', {method: 'POST', body: params});
+    // const response = await fetch(request);
+    // console.log(response);
+    // const query = await response.json();
+    // console.log(query);
+    preQuery(userInput);
+}
+
 function preQuery(userInput) {
     //text based query
     resultsArray = [];
     resultsDistances = [];
     resultsDurations = [];
+    clearMarkers();
+
     var request = {
         query: userInput,
     };
+
     service.textSearch(request, function(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             for (var i = 0; i < results.length && i < 8; i++) {
@@ -140,7 +168,8 @@ function preQuery(userInput) {
                                 name: results[i].name,
                                 rating: results[i].rating,
                                 duration: null,
-                                distance: null
+                                distance: null,
+                                index: i
                                 };
                 resultsArray.push(resultObj);
             }
@@ -163,11 +192,26 @@ function createMarker(place) {
     map: map,
     position: place.geometry.location
   });
+  markers.push(marker);
   google.maps.event.addListener(marker, 'click', function() {
     infowindow.setContent(place.name);
     infowindow.open(map, this);
   });
 }
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
+}
+
+// Removes the markers from the map, clears them from the array.
+function clearMarkers() {
+    setMapOnAll(null);
+    markers = [];
+}
+
 
 function updateResults() {
     // Build comments
@@ -181,6 +225,7 @@ function updateResults() {
         resultsArray[i].distance = resultsDistances[i];
         resultsListElement.appendChild(createResultElement(resultsArray[i]));
     }
+    drawChart();
 }
 
 /** Creates an <li> element containing text. */
@@ -188,18 +233,32 @@ function createResultElement(result) {
 
     const resultElement = document.createElement('div');
     resultElement.className = 'result';
+    resultElement.id = result.index;
 
-    const nameElement = document.createElement('p');
+    const nameElement = document.createElement('h5');
     nameElement.className = 'result_name_rating';
-    nameElement.innerText = result.name + " "+ result.rating;
+    nameElement.innerText = result.name + " ---  "+ result.rating;
+    nameElement.style = 'font-weight: bold;';
     resultElement.appendChild(nameElement);
 
     const routeElement = document.createElement('p');
     routeElement.className = 'result_route';
-    routeElement.innerText = result.distance.text + " "+ result.duration.text;
+    routeElement.innerText = result.distance.text + "   "+ result.duration.text;
     resultElement.appendChild(routeElement);
 
+    resultElement.addEventListener('click', () => {
+        selectResult(parseInt(resultElement.id));
+        clearStyles();
+        resultElement.style = "background-color:#d0b0f7";
+    });
+
     return resultElement;
+}
+
+function clearStyles() {
+    for (var i = 0; i < resultsArray.length; i++) {
+        document.getElementById(i.toString()).removeAttribute("style");
+    }
 }
 
 function afterQuery() {
@@ -211,6 +270,7 @@ function afterQuery() {
 function routeResults() {
 
     for (var i = 0; i < resultsArray.length; i++) {
+
         let route = {
                 origin: userLocation,
                 destination: resultsArray[i].destination,
@@ -225,7 +285,7 @@ function routeResults() {
                 } else {
                     directionsRenderer.setDirections(response); // Add route to the map
                     var directionsData = response.routes[0].legs[0]; // Get data about the mapped route
-                    let polyline = response.routes[0].overview_polyline;
+                    //let polyline = response.routes[0].overview_polyline;
 
                     if (!directionsData) {
                         window.alert('Directions request failed');
@@ -238,8 +298,8 @@ function routeResults() {
             }
         );
     };
-    afterQuery();
 
+    afterQuery();
 }
 
 

@@ -1,5 +1,4 @@
 #map {
-  border: thin solid black;
   height: 400px;
   width: 400px;
 }
@@ -18,7 +17,7 @@
 }
 
 body {
-    font-family: 'Cutive Mono', monospace;
+    font-family: 'Dosis', sans-serif;
 }
 
 .footer a {
@@ -36,6 +35,7 @@ a:hover {
 
 #header {
     margin-top: 60px;
+    font-family: 'Cutive Mono', monospace;
 }
 
 #totoro {
