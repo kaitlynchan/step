@@ -37,30 +37,22 @@ public final class FindMeetingQuery {
         return Arrays.asList();
     } 
     
-    //@Test eventSplitsRestriction()
-    //Two possible TimeRanges: before and after the event
-    //ArrayLists are Collections already
     ArrayList<TimeRange> possibleTimes = new ArrayList<TimeRange>();
     ArrayList<TimeRange> eventTimes = new ArrayList<TimeRange>();
 
     HashSet<String> mtgAttendees = new HashSet<String>(request.getAttendees());
     long duration = request.getDuration();
-
     int currentTime = TimeRange.START_OF_DAY;
-    
-    //System.out.println(events.toString());
 
     for (Event event : events) {
         Set<String> eventAttendees = event.getAttendees(); //can't modify
         HashSet<String> intersection = new HashSet<String>(eventAttendees); // use the copy constructor
 
         intersection.retainAll(mtgAttendees);
-        System.out.print("Intersection: ");
-        System.out.println(intersection.toString());
+
         //s1.retainAll(s2) — transforms s1 into the intersection of s1 and s2. 
         //if there are event attendees invited to the meeting, keep track of the event time
         if (!intersection.isEmpty()) {
-            //do not add TR if it is nested
             if (eventTimes.isEmpty()) {
                 eventTimes.add(event.getWhen());
             } else {
@@ -74,8 +66,7 @@ public final class FindMeetingQuery {
     }
     //sort relevant events by TimeRanges
     Collections.sort(eventTimes, TimeRange.ORDER_BY_START);
-    System.out.print("Event Times: ");
-    System.out.println(eventTimes.toString());
+
     //Start from the beginning of the day and build TimeRanges
     for (TimeRange time : eventTimes) {
         System.out.println(currentTime);
@@ -91,11 +82,7 @@ public final class FindMeetingQuery {
         TimeRange currentTR = TimeRange.fromStartEnd(currentTime, TimeRange.END_OF_DAY, true);
         possibleTimes.add(currentTR);
     }
-    System.out.print("Possible Times: ");
-    System.out.println(possibleTimes.toString());
-    //TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false
-    //TimeRange.fromStartDuration(TIME_0800AM, DURATION_30_MINUTES)
-
+    
     return possibleTimes;
   }
 }
