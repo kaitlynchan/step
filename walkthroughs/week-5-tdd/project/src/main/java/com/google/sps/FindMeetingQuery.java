@@ -23,15 +23,43 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class FindMeetingQuery {
+
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+
+      HashSet<String> optionalAttendees = new HashSet<String>(request.getOptionalAttendees());
+      HashSet<String> mandatoryAttendees = new HashSet<String>(request.getAttendees());
+
+      //if no optional attendees, return call to queryMandatory
+      if (mandatoryAttendees.isEmpty() && optionalAttendees.isEmpty()) {
+          return queryMandatory(events, request);
+      }
+
+      //if optional attendees present, merge groups of attendees
+      HashSet<String> mergedAttendees = new HashSet<String>();
+      mergedAttendees.addAll(optionalAttendees);
+      mergedAttendees.addAll(mandatoryAttendees);
+      long duration = request.getDuration();
+      MeetingRequest mergedRequest = new MeetingRequest(mergedAttendees, duration);
+      //query on all attendees as mandatory
+      Collection<TimeRange> mergedTimes = queryMandatory(events, mergedRequest);
+
+      if (mergedTimes.isEmpty() && !mandatoryAttendees.isEmpty()) {
+          //if no times work for merged groups, query for only mandatory
+          return queryMandatory(events, request);
+      }
+      //else, there are merged times that work!
+      return mergedTimes;
+  }
+
+
+  public Collection<TimeRange> queryMandatory(Collection<Event> events, MeetingRequest request) {
     //return a collection of TimeRanges that work given known events and a meeting request
 
-    //@Test optionsForNoAttendees()
     //if no attendees in the mtg req, return the whole day as a collection of possible times
     if (request.getAttendees().isEmpty()) {
         return Arrays.asList(TimeRange.WHOLE_DAY);
     } 
-    //@Test noOptionsForTooLongOfARequest()
+
     //if meeting duration is longer than a day, then return no possible times
     if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
         return Arrays.asList();
@@ -39,20 +67,25 @@ public final class FindMeetingQuery {
     
     ArrayList<TimeRange> possibleTimes = new ArrayList<TimeRange>();
     ArrayList<TimeRange> eventTimes = new ArrayList<TimeRange>();
+    //Cast the collection of events into a sortable Array List
+    ArrayList<Event> eventsArr = new ArrayList<Event>(events);
 
     HashSet<String> mtgAttendees = new HashSet<String>(request.getAttendees());
     long duration = request.getDuration();
+    //pointer to track TRs
     int currentTime = TimeRange.START_OF_DAY;
 
-    for (Event event : events) {
+    //sort all the events by TR
+    Collections.sort(eventsArr, Event.ORDER_BY_START);
+
+    for (Event event : eventsArr) {
         Set<String> eventAttendees = event.getAttendees(); //can't modify
         HashSet<String> intersection = new HashSet<String>(eventAttendees); // use the copy constructor
-
+        //intersection of event and meeting attendees
         intersection.retainAll(mtgAttendees);
 
-        //s1.retainAll(s2) — transforms s1 into the intersection of s1 and s2. 
-        //if there are event attendees invited to the meeting, keep track of the event time
         if (!intersection.isEmpty()) {
+            //track the first event of the day
             if (eventTimes.isEmpty()) {
                 eventTimes.add(event.getWhen());
             } else {
@@ -64,17 +97,15 @@ public final class FindMeetingQuery {
             }
         }
     }
-    //sort relevant events by TimeRanges
-    Collections.sort(eventTimes, TimeRange.ORDER_BY_START);
 
     //Start from the beginning of the day and build TimeRanges
     for (TimeRange time : eventTimes) {
-        System.out.println(currentTime);
         TimeRange currentTR = TimeRange.fromStartEnd(currentTime, time.start(), false);
         //if event overlaps with previous event, duration is negative
         if (currentTR.duration() >= duration) {
             possibleTimes.add(currentTR);
         }
+        //update the time pointer to the end of the TR
         currentTime = time.end();
     }
     //add the last section of time in the day (inclusive)
