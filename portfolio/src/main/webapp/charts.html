@@ -5,7 +5,7 @@
     <title>Kaitlyn Chan</title>
     <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap" rel="stylesheet">
-    <script src="script.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Bootstrap CDN-->
     <!-- Latest compiled and minified CSS -->
@@ -17,32 +17,33 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWwsqc8sfwPsjMWBa07pz_ZjA_jXAIhB0&libraries=places"></script>
+    <script src="charts.js"></script>
   </head>
-  <body>
+  <body onload="createMap();">
     <div class="container">
         <div class="row" id ="header">
             <div class="col">
-                <h1>Kaitlyn Chan</h1>
+                <h1>Charts and Maps and Stuff</h1>
             </div>
         </div>
         <div class="row">
-            <div class="col-4">
-                <p>Hi there :) </p>
-                <p> Recently, I took a Digital Signal Processing class,
-                    where we learned about ways to manipulate signals with transforms, filters,
-                    and other continuous/discrete systems in hopes of extracting meaningful information. Our 
-                    professor also really likes HAM radio, so our <a href="https://sites.google.com/corp/berkeley.edu/ee123-sp20/project?authuser=0">final project</a>
-                    was to improve a compression algorithm and send a meme over radio (with <a href="https://aprs.fi/#!lat=37.5659&lng=-122.3661">APRS</a> packets).
-                </p>
-                <p> I also enjoy listening to music, so here is my attempt 
-                    to automate lofi-vibes using some DSP. This is also inspired
-                    by <a href="https://youtu.be/AKffZySqQts">vocaloid</a> music.
-                </p>
+            <div class="col">
+                
+                <input type="text" id="queryText" placeholder="[queries]" name="text"></input>
+                <label for="text">near me:   </label>
+               <button type="submit" class="btn btn-dark" onclick="inputQuery()">Submit</button>
             </div>
-            <div class="col-8">
-                <img src="/images/index.gif">
-                <p>Source: giphy.com/gifs/sg-4aCi2Ov0wtYpG</p>
-            </div>
+        </div>
+        <div class="row">
+            <div class="col" id="map"></div>
+        </div>
+        <div class="row">
+            <div class="col"><p>click a result to highlight its corresponding point!</p></div>
+        </div>
+        <div class="row">
+            <div class="col" id="results-container"></div>
+            <div class="col" id="chart-container"></div>
         </div>
         <div class="row">
             <div class="col">
@@ -56,6 +57,5 @@
             </div>
         </div>
     </div>
-    
   </body>
 </html>

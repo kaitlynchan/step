@@ -12,9 +12,130 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Adds a random greeting to the page.
- */
+//use fetch to request data from the server
+async function checkLogin() {
+    //if user is logged in, unhide comment form
+    const response = await fetch('/login');
+    const login = await response.json();
+    console.log(login);
+
+    const loginElement = document.getElementById("loginLink");
+    loginElement.style.display = "block";
+    loginElement.innerHTML = '';
+    //not logged in
+    if (!login.loginStatus) {
+        document.getElementById("commentForm").style.display = "none";
+        loginElement.innerHTML = '<a href=\"' + login.loginLink + '\">Login to Comment</a>';
+    } 
+    //logged in but no nickname
+    else if (!login.nickname) {
+        document.getElementById("commentForm").style.display = "none";
+        loginElement.innerHTML = '<p>Set your nickname <a href=\"/nickname\">here</a>.</p>';
+    }
+    //logged in with nickname
+    else {
+        document.getElementById("commentForm").style.display = "block";
+        loginElement.innerHTML = '<a href=\"' + login.logoutLink + '\">Logout Here</a> <p>Hi, '+ login.nickname + '. Change your nickname <a href=\"/nickname\">here</a>.</p>';
+    }
+}
+
+async function fetchBlobstoreUrl() {
+    const response = await fetch('/blobstore-upload-url');
+    const uploadUrl = await response.text();
+    const commentForm = await document.getElementById('imgUploadForm');
+    commentForm.action = uploadUrl;
+    console.log(uploadUrl);
+}
+
+//body onload()
+async function updateComments() {
+  checkLogin();
+  var numComments = await document.getElementById("nC").value;
+  //GET
+  var queryString = '/data?numComments=' + numComments;
+  console.log(queryString);
+  const response = await fetch(queryString);
+  //parse response as json
+  const comments = await response.json();
+  console.log(comments);
+  await fetchBlobstoreUrl();
+  console.log("done!");
+  // Build comments
+  const commentsListElement = document.getElementById('comment-container');
+  commentsListElement.innerHTML = '';
+  if (comments !== "invalid numComments") {
+        comments.forEach((comment) => {
+        commentsListElement.appendChild(createCommentElement(comment));
+    });
+  }
+}
+
+/** Creates an <li> element containing text. */
+function createCommentElement(comment) {
+  const commentElement = document.createElement('div');
+  commentElement.className = 'comment';
+
+  const nameElement = document.createElement('p');
+  nameElement.className = 'comment_name';
+  nameElement.innerText = comment.name;
+  commentElement.appendChild(nameElement);
+
+//   const emailElement = document.createElement('p');
+//   emailElement.className = 'comment_email';
+//   emailElement.innerText = comment.email;
+//   commentElement.appendChild(emailElement);
+
+  const textElement = document.createElement('p');
+  textElement.innerText = comment.text;
+  commentElement.appendChild(textElement);
+
+  if (comment.imageUrl) {
+    console.log("wow an image");
+    const imgElement = document.createElement('img');
+    imgElement.src = comment.imageUrl;
+    commentElement.appendChild(imgElement);
+  }
+
+  const timeElement = document.createElement('p');
+  timeElement.className = 'comment_date';
+  var date = new Date(comment.timestamp);
+  timeElement.innerText = date.toLocaleString();
+  commentElement.appendChild(timeElement);
+
+  const deleteButtonElement = document.createElement('button');
+  deleteButtonElement.className = 'close';
+  deleteButtonElement.innerHTML = '<span aria-hidden="true">&times;</span>';
+  
+  deleteButtonElement.addEventListener('click', () => {
+    deleteComment(comment).then(success => {
+        // Remove the comment from the DOM.
+        if (success) {
+            commentElement.remove();
+        }
+    });
+  });
+  nameElement.appendChild(deleteButtonElement);
+
+  return commentElement;
+}
+
+//send POST request to /delete-data
+async function deleteComment(comment) {
+  //only allow the user to delete only her own comments
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  params.append('email', comment.email);
+  const request = new Request('/delete-data', {method: 'POST', body: params});
+  const response = await fetch(request);
+  const deleteSuccess = await response.json();
+  if (deleteSuccess) {
+    //fetch comments back from the server
+    updateComments();
+  } else {
+    alert("Invalid access to delete comment");
+  }
+  return deleteSuccess;
+}
 
 //lofi object
 const lofi = {song:"", filter:"", beat:"", monologue:""};

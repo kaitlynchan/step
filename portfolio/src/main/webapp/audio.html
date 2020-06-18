@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Kaitlyn Chan</title>
     <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap" rel="stylesheet">
     <script src="script.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Bootstrap CDN-->
@@ -17,7 +18,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="style.css">
   </head>
-  <body>
+  <body onload="updateComments()">
     <div class="container">
         <div class="row" id ="header">
             <div class="col">
@@ -26,10 +27,61 @@
         </div>
         <div class="row">
             <div class="col">
-                <p>Click the Song/Filter/Monologue/Beat buttons to select your track.</p>
+                 <p>Click the Song/Filter/Monologue/Beat buttons to select your track.</p>
                  <p>Make sure to select the checkbox to implement your effects.</p>
                  <p>Click Generate Lofi to play/pause and implement your changes.</p>
                  <p>Enjoy!</p>
+            </div>
+        </div>
+        <div class = "row" id="commentForm">
+            <div class="col">
+                <h2>Submit Comments/Feedback:</h2>
+                <!-- <form action="/data" method="POST"> -->
+                <form method="POST" id="imgUploadForm" enctype="multipart/form-data">
+                <!-- <div class="form-group">
+                    <label for="text">Name:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
+                </div> -->
+                <div class="form-group">
+                    <label for="text">Comment:</label>
+                    <textarea class="form-control" id="text" placeholder="Enter comment" name="text" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile" name="image">
+                        <label class="custom-file-label" for="customFile">Choose file</label>
+                    </div>
+                </div>
+                <script>
+                    // Add the following code if you want the name of the file appear on select
+                    $(".custom-file-input").on("change", function() {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                    });
+                </script>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class = "row">
+            <div class="col" id="loginLink"></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h2>Comments/Feedback: </h2>
+                  <form class="form-inline" id="numCommentForm">
+                    <div class="form-group">
+                        <label for="nC">Number of Comments:</label>
+                        <select class="form-control" id="nC" name="numComments" onchange=updateComments()>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                  </form>
+                <div id="comment-container"></div>
             </div>
         </div>
         <div class="row">
@@ -37,6 +89,7 @@
             <footer class="footer">
                 <span class="text-muted"><a href="about.html">About</a></span>
                 <span class="text-muted"><a href="index.html">Lofi</a></span>
+                 <span class="text-muted"><a href="charts.html">Queries</a></span>
             </footer>
             </div>
         </div>
